@@ -1,0 +1,28 @@
+variable "project_name" {}
+variable "availability_zones" {}
+variable "environment" {}
+
+provider "aws" {}
+
+locals {
+  app_name = "${var.project_name}-${var.environment}"
+}
+
+resource "aws_vpc" "google" {
+  cidr_block       = "192.168.0.0/16"
+  instance_tenancy = "default"
+  enable_dns_hostnames = "true"
+
+  tags = {
+    Name = local.app_name 
+  }
+}
+
+resource "aws_internet_gateway" "google_igw" {
+  vpc_id = "${aws_vpc.google.id}"
+
+  tags = {
+    Name = "${local.app_name}-igw"
+  }
+}
+
